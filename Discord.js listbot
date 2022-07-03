@@ -1,0 +1,197 @@
+
+
+const { default: cli } = require('cucumber/lib/cli');
+const {Client, UserFlags, User, DMChannel, MessageEmbed, MessageReaction} = require('discord.js');
+
+const client = new Client({ intents: [ 'GUILDS', 'GUILD_MESSAGES', 'GUILD_MEMBERS' ] });
+
+
+
+client.once('ready', () => {
+    console.log('Holligy list bot online!')
+});
+
+const channel = client.channels.cache.get('/957212782837784606/957212783844397118');
+
+var money = new Map();
+const mems = client.guilds.cache.get("990679536788197436"); 
+// define members
+
+client.on('messageCreate', (message) => {
+    if(message.content === '!bot help' || message.content === '!help') {
+        const newEmbed = new MessageEmbed()
+        .setColor('#000000')
+        .setTitle('Help')
+        .setDescription('These are all the commands you can do currently!')
+        .addFields(
+            { name: '!help', value: 'Shows this message!' },
+            { name: '!ping', value: 'Sends the message "Pong!"' },
+            { name: '!bot list 1', value: 'Adds you to list 1 for keys!' },
+            { name: '!bot list 2', value: 'Adds you to list 2 for keys!' }
+        )
+
+        message.channel.send({ embeds: [newEmbed] });
+        
+    }
+})
+client.on('messageCreate', (message) => {
+    if(message.content.startsWith('!bot poll')) {
+        if(message.member.roles.cache.find(r => r.name === "Programmer" || r.name === "Admin")) {
+            let args = message.content.substring(10).split(' ');
+            let time = args[0];
+            const embederr = new MessageEmbed()
+            .setColor('#000000')
+            .setTitle('Poll')
+            .setDescription('Error! You either did not enter a time or the time was below 3! The syntax is: !bot poll <time> <question>')
+            if(isNaN(time)) {
+                message.channel.send({ embeds: [embederr] });
+                return;
+            }
+            // check if time is below 3
+            if(time < 3) {
+                message.channel.send({ embeds: [embederr] });
+                return;
+            }
+            let realtime = time * 1000;
+            const poll = args.shift().toLowerCase();
+            const newEmbed = new MessageEmbed()
+            .setColor('#000000')
+            .setTitle('Poll')
+            .setDescription('Please put arguments in!')
+            if(!args[0]) {
+                message.channel.send({ embeds: [newEmbed] });
+            }
+            else {
+
+            let msgArgs = args.join(' ');
+
+            message.channel.send("📋 **" + msgArgs + "**").then(MessageReaction => {
+                MessageReaction.react('✅');
+                MessageReaction.react('❌');
+                message.delete(5000);
+                setTimeout(() => {
+                    // get amount of votes
+                    const reactions = MessageReaction.reactions.cache.get('✅').count;
+                    const reactions2 = MessageReaction.reactions.cache.get('❌').count;   
+                    const yespercent = (reactions / (reactions + reactions2)) * 100;
+                    const nopercent = (reactions2 / (reactions + reactions2)) * 100; 
+                    // work out who won
+                     const winner = (yespercent > nopercent) ? "Yes" : (yespercent < nopercent) ? "No" : "Tie";
+                    const reactionamount = reactions + reactions2;      
+                    const Embed2 = new MessageEmbed()                   
+                    .setColor('#000000')
+                    .setTitle('Answers')
+                    .setDescription('The Anwers are:')
+                    .addFields(
+                        { name: 'Yes', value: 'Yes: ' + reactions + ' (' + yespercent + '%)' },
+                        { name: 'No', value: 'No: ' + reactions2 + ' (' + nopercent + '%)' },
+                        { name: 'Winner', value: 'Winner: ' + winner },
+                        { name: 'Total', value: 'Votes: ' + reactionamount }
+                    )
+                    message.channel.send({ embeds: [Embed2] });
+                }, realtime);
+            })
+        }
+        }
+    }
+})
+// sends a dm to the selected user
+
+
+
+
+
+
+client.on('messageCreate', (message) => {
+    if (message.content === '!ping') {   
+        // give user admin role
+       
+            message.reply({
+                content: 'pong',
+            })
+        }
+        
+        
+
+
+    
+})
+
+
+let z = 14;
+client.on('messageCreate', (message) => {
+    if (message.content === '!bot list 2') {
+        if(!message.member.roles.cache.find(r => r.name === "Queue 2" || r.name === "Queue 1")) {
+            message.channel.send({
+                content: 'Added to list!',
+            })
+            let role = message.guild.roles.cache.find(r => r.id === "991042009206763530");
+            let member = message.author.username
+            message.member.roles.add(role)
+            client.channels.cache.get('991041358385008640').send({
+                content: z + '. <@' + message.author + '>'
+
+            })
+            z = z + 1;
+        }
+        else {
+            message.channel.send({
+                content: 'Already in list!',
+            })
+        }
+        
+        
+
+    
+}
+})
+
+
+
+
+
+
+let y = 20;
+let x = 1;
+const chan = client.channels.cache.find(channel => channel.name === 'admin-chat')
+
+
+
+client.on('messageCreate', (message) => {
+    if (message.content === '!bot list 1') {
+        if(!message.member.roles.cache.find(r => r.name === "Queue 1" || r.name === "Queue 2")) {
+            message.channel.send({
+                content: 'Added to list!',
+            })
+            let role = message.guild.roles.cache.find(r => r.id === "990776803725566012");
+            let member = message.author.username
+            message.member.roles.add(role)
+            client.channels.cache.get('990686968839041134').send({
+                content: y + '. <@' + message.author + '>'
+
+            })
+            y = y + 1;
+        }
+        else {
+            message.channel.send({
+                content: 'Already in list!',
+            })
+        }
+    }
+        
+    
+
+})
+
+
+            
+            
+
+
+
+
+
+
+
+
+client.login('Key hidden for security');
